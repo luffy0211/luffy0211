@@ -1,0 +1,28 @@
+# 登录状态（含敏感 cookie）
+state/
+*.json
+!package.json
+
+# 旧版文件归档
+archive/
+
+# 日志
+logs/
+
+# 数据文件
+*.xlsx
+*.png
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
