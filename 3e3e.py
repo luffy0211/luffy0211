@@ -6,8 +6,6 @@ import requests
 import random
 import openpyxl
 from pathlib import Path
-import asyncio
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from config import E3E3_STATE_FILE, STATE_DIR, DESKTOP_PATH, IMAGE_ROOT
 
@@ -231,7 +229,7 @@ def crawl_3e3e_product(url):
         
         # 启动 Edge 浏览器
         browser = p.chromium.launch(
-            headless=True,
+            headless=False,
             channel="msedge"
         )
         
@@ -242,89 +240,111 @@ def crawl_3e3e_product(url):
         )
         page = context.new_page()
 
-        # 访问商品页
-        page.goto(url, timeout=60000)
-        page.wait_for_load_state("networkidle")
-
-        # 开始抓取数据
-        data = {}
-
-        # 1. 商品标题
-        data["title"] = page.locator(".product-details h5").inner_text().strip()
-        
-        # 商品名称去掉"复制"并去除所有空格
-        title = data.get('title', '').replace('复制', '').replace(' ', '').strip()
-        data["title"] = title
-
-        # 3. 价格
-        data["price"] = page.locator(".product-price-info strong i").inner_text().strip()
-
-
-        images = []
-        
-        # 抓取主图和缩略图
-        imgs = page.locator(".small-img-list img")
-        count = imgs.count()
-        for i in range(count):
-            src = imgs.nth(i).get_attribute("data-url")
-            if src and src not in images:
-                images.append(src)
-        
-        # 抓取 sku-wrap 中的图片
-        sku_imgs = page.locator("ul.sku-wrap img")
-        sku_count = sku_imgs.count()
-        for i in range(sku_count):
-            src = sku_imgs.nth(i).get_attribute("src") or sku_imgs.nth(i).get_attribute("data-url")
-            if src and src not in images:
-                images.append(src)
-        
-        data["images"] = images
-
-        # 7. 商品视频
         try:
-            data["video_url"] = page.locator("#video-flv").get_attribute("src")
-        except:
-            data["video_url"] = ""
+            # 访问商品页
+            page.goto(url, timeout=60000)
+            page.wait_for_load_state("networkidle")
 
-        # 8. 颜色
-        colors = []
-        color_items = page.locator(".sku-warp-li")
-        for i in range(color_items.count()):
-            color = color_items.nth(i).get_attribute("data-color")
-            if color:
-                colors.append(color)
-        data["colors"] = colors
+            # 等待商品标题出现
+            print("等待页面加载...")
+            try:
+                page.wait_for_selector(".product-details h5", timeout=30000)
+            except Exception:
+                print("标题选择器超时，等待页面继续加载...")
+                page.wait_for_timeout(5000)
+                if not page.locator(".product-details h5").count():
+                    raise TimeoutError("等待商品标题超时，页面可能未正确加载或需要登录")
 
-        # 9. 尺码
-        sizes = []
-        size_items = page.locator(".sku-size")
-        for i in range(size_items.count()):
-            size = size_items.nth(i).inner_text().strip()
-            if size:
-                sizes.append(size)
-        data["sizes"] = sizes
+            # 开始抓取数据
+            data = {}
 
-        # 10. 店铺信息
-        data["shop_name"] = page.locator(".supplier-name a").inner_text().strip()
-        data["shop_url"] = page.locator(".supplier-name a").get_attribute("href")
-        data["shop_address"] = page.locator(".desc").inner_text().strip()
+            # 1. 商品标题
+            data["title"] = page.locator(".product-details h5").inner_text().strip()
+            
+            # 商品名称去掉"复制"并去除所有空格
+            title = data.get('title', '').replace('复制', '').replace(' ', '').strip()
+            data["title"] = title
 
+            # 3. 价格
+            try:
+                data["price"] = page.locator(".product-price-info strong i").inner_text().strip()
+            except Exception:
+                data["price"] = ""
 
-        # 12. 商品属性（风格、季节、材质、功能等）
-        attrs = []
-        attr_items = page.locator(".details-attribute-item")
-        for i in range(attr_items.count()):
-            attrs.append(attr_items.nth(i).inner_text().strip())
-        data["attributes"] = attrs
+            images = []
+            
+            # 抓取主图和缩略图
+            imgs = page.locator(".small-img-list img")
+            count = imgs.count()
+            for i in range(count):
+                src = imgs.nth(i).get_attribute("data-url")
+                if src and src not in images:
+                    images.append(src)
+            
+            # 抓取 sku-wrap 中的图片
+            sku_imgs = page.locator("ul.sku-wrap img")
+            sku_count = sku_imgs.count()
+            for i in range(sku_count):
+                src = sku_imgs.nth(i).get_attribute("src") or sku_imgs.nth(i).get_attribute("data-url")
+                if src and src not in images:
+                    images.append(src)
+            
+            data["images"] = images
 
-        # 13. 商品ID（从页面提取）
-        try:
-            data["product_id"] = page.locator(".product-collect-btn").get_attribute("monitor-productid")
-        except:
-            data["product_id"] = ""
+            # 7. 商品视频
+            try:
+                data["video_url"] = page.locator("#video-flv").get_attribute("src")
+            except Exception:
+                data["video_url"] = ""
 
-        browser.close()
-        return data
+            # 8. 颜色
+            colors = []
+            color_items = page.locator(".sku-warp-li")
+            for i in range(color_items.count()):
+                color = color_items.nth(i).get_attribute("data-color")
+                if color:
+                    colors.append(color)
+            data["colors"] = colors
+
+            # 9. 尺码
+            sizes = []
+            size_items = page.locator(".sku-size")
+            for i in range(size_items.count()):
+                size = size_items.nth(i).inner_text().strip()
+                if size:
+                    sizes.append(size)
+            data["sizes"] = sizes
+
+            # 10. 店铺信息
+            try:
+                data["shop_name"] = page.locator(".supplier-name a").inner_text().strip()
+            except Exception:
+                data["shop_name"] = ""
+            try:
+                data["shop_url"] = page.locator(".supplier-name a").get_attribute("href")
+            except Exception:
+                data["shop_url"] = ""
+            try:
+                data["shop_address"] = page.locator(".desc").inner_text().strip()
+            except Exception:
+                data["shop_address"] = ""
+
+            # 12. 商品属性（风格、季节、材质、功能等）
+            attrs = []
+            attr_items = page.locator(".details-attribute-item")
+            for i in range(attr_items.count()):
+                attrs.append(attr_items.nth(i).inner_text().strip())
+            data["attributes"] = attrs
+
+            # 13. 商品ID（从页面提取）
+            try:
+                data["product_id"] = page.locator(".product-collect-btn").get_attribute("monitor-productid")
+            except Exception:
+                data["product_id"] = ""
+
+            return data
+        finally:
+            browser.close()
 
 
 if __name__ == "__main__":

@@ -138,6 +138,15 @@ async def crawl_3e3e_url(url: str) -> dict:
             await page.wait_for_load_state("networkidle")
             await asyncio.sleep(random.uniform(1, 3))
 
+            # 等待商品标题出现
+            try:
+                await page.wait_for_selector(".product-details h5", timeout=30000)
+            except Exception:
+                await asyncio.sleep(5)
+                title_check = await page.query_selector(".product-details h5")
+                if not title_check:
+                    raise TimeoutError("等待商品标题超时，页面可能未正确加载或需要登录")
+
             # 标题
             title_el = await page.query_selector(".product-details h5")
             raw_title = (await title_el.inner_text()).strip() if title_el else "未知"
