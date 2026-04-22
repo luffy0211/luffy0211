@@ -6,15 +6,10 @@ import requests
 import random
 import openpyxl
 from pathlib import Path
-import time
-import requests
-import random
-import openpyxl
-from pathlib import Path
 import asyncio
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from config import E3E3_STATE_FILE, STATE_DIR
+from config import E3E3_STATE_FILE, STATE_DIR, DESKTOP_PATH, IMAGE_ROOT
 
 # 登录状态文件路径
 LOGIN_STATE_FILE = E3E3_STATE_FILE
@@ -63,9 +58,9 @@ def write_to_excel(data, product_data=None, image_paths=None, filename='3e3e_pro
         # 材质成分
         elif '材质成分：' in attr:
             material = attr.replace('材质成分：', '').replace('材质成分：', '').strip()
-        # 安全类别（注意：JSON中是"安全类别"不是"安全等级"）
-        elif '安全类别：' in attr:
-            safety = attr.replace('安全类别：', '').replace('安全类别：', '').strip()
+        # 安全类别/安全等级
+        elif '安全类别：' in attr or '安全等级：' in attr:
+            safety = attr.replace('安全类别：', '').replace('安全等级：', '').strip()
         # 身高
         elif '身高：' in attr:
             height = attr.replace('身高：', '').replace('身高：', '').strip()
@@ -112,13 +107,12 @@ def write_to_excel(data, product_data=None, image_paths=None, filename='3e3e_pro
 def download_images(product_name, image_urls):
     """下载图片到桌面童装文件夹"""
     image_paths = {'main': '', 'sku': ''}
-    desktop_path = r"C:\\Users\\郭雷A\\Desktop"
     
-    safe_name = "".join(c for c in product_name if c not in r'\\/:*?"<>|').strip()[:50]
+    safe_name = "".join(c for c in product_name if c not in r'\/:*?"<>|').strip()[:50]
     if not safe_name:
         safe_name = "product"
     
-    product_folder = os.path.join(desktop_path, '童装', safe_name)
+    product_folder = os.path.join(IMAGE_ROOT, safe_name)
     main_folder = product_folder
     sku_folder = os.path.join(product_folder, 'sku')
     
@@ -261,12 +255,6 @@ def crawl_3e3e_product(url):
         # 商品名称去掉"复制"并去除所有空格
         title = data.get('title', '').replace('复制', '').replace(' ', '').strip()
         data["title"] = title
-        
-        # 商品名称去掉"复制"并去除所有空格
-        title = data.get('title', '').replace('复制', '').replace(' ', '').strip()
-        data["title"] = title
-
-       
 
         # 3. 价格
         data["price"] = page.locator(".product-price-info strong i").inner_text().strip()
