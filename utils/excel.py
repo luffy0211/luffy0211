@@ -122,7 +122,7 @@ def write_product_data(
             "",  # D列
             "",  # E列
             params.get("风格", ""),  # F列：风格
-            params.get("颜色分类", ""),  # G列：颜色分类
+            params.get("颜色分类", "").replace(",", " ").replace("，", " "),  # G列：颜色分类
             params.get("适用季节", ""),  # H列：适应季节
             params.get("材质成分", ""),  # I列：材质成分
             params.get("面料", ""),  # J列：面料

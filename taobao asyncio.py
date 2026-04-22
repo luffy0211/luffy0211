@@ -9,6 +9,7 @@ from playwright_stealth import Stealth
 import openpyxl
 from datetime import datetime
 from pathlib import Path
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 def read_url_from_excel(filename='urls.xlsx', row=1, col=1):
     """从Excel文件中读取URL"""
@@ -109,7 +110,7 @@ def write_to_excel(data, product_data=None, image_paths=None, filename='taobao_p
             height = value
         # 颜色分类
         elif key == '颜色分类':
-            color_str = value
+            color_str = value.replace(",", " ").replace("，", " ")
     
     # 主图和SKU图路径只保留文件夹路径（从第一个文件路径提取）
     main_path = image_paths.get('main', '') if image_paths else ''

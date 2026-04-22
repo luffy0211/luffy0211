@@ -2,6 +2,10 @@
 state/
 *.json
 !package.json
+!tsconfig.json
+!tsconfig.app.json
+!tsconfig.node.json
+!eslint.config.js
 
 # 旧版文件归档
 archive/
@@ -13,6 +17,12 @@ logs/
 *.xlsx
 *.png
 
+# 数据库
+*.db
+
+# 临时文件
+txt.html
+
 # Python
 __pycache__/
 *.pyc
@@ -20,6 +30,10 @@ __pycache__/
 .env
 venv/
 .venv/
+
+# Node
+node_modules/
+dist/
 
 # IDE
 .vscode/

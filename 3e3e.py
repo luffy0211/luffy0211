@@ -11,9 +11,13 @@ import requests
 import random
 import openpyxl
 from pathlib import Path
+import asyncio
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+from config import E3E3_STATE_FILE, STATE_DIR
 
 # 登录状态文件路径
-LOGIN_STATE_FILE = "3e3e_login_state.json"
+LOGIN_STATE_FILE = E3E3_STATE_FILE
 
 def write_to_excel(data, product_data=None, image_paths=None, filename='3e3e_products.xlsx'):
     """将数据写入Excel文件（覆盖写入，只保留最新数据）"""

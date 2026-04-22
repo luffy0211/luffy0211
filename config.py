@@ -11,6 +11,7 @@ TAOBAO_STATE_FILE = os.path.join(STATE_DIR, "taobao_state.json")
 WEIXIN_STATE_FILE = os.path.join(STATE_DIR, "weixin_state.json")
 SHIPINHAO_STATE_FILE = os.path.join(STATE_DIR, "shipinhao_state.json")
 XHS_STATE_FILE = os.path.join(STATE_DIR, "xiaohongshu_state.json")
+E3E3_STATE_FILE = os.path.join(STATE_DIR, "3e3e_state.json")
 
 # Excel 文件（桌面）
 UPLOAD_EXCEL = os.path.join(DESKTOP_PATH, "影刀上架参数.xlsx")
