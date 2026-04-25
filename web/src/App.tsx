@@ -1,14 +1,20 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Zap, LayoutDashboard, Package, ListTodo, Settings } from 'lucide-react';
+import { Blocks, Image as ImageIcon, LayoutDashboard, LayoutGrid, ListTodo, Package, Settings } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Tasks from './pages/Tasks';
 import Platforms from './pages/Platforms';
 
+const appNavs = [
+  { href: 'http://127.0.0.1:3100', name: '工作台', icon: LayoutGrid, active: false },
+  { href: 'http://127.0.0.1:3200', name: '图片优化', icon: ImageIcon, active: false },
+  { href: 'http://127.0.0.1:5173', name: '商品分发', icon: Blocks, active: true },
+];
+
 const navs = [
+  { path: '/', name: '任务管理', icon: ListTodo },
   { path: '/dashboard', name: '仪表盘', icon: LayoutDashboard },
   { path: '/products', name: '商品管理', icon: Package },
-  { path: '/', name: '任务管理', icon: ListTodo },
   { path: '/platforms', name: '平台管理', icon: Settings },
 ];
 
@@ -24,40 +30,78 @@ function Layout() {
   const headerTitle = PAGE_TITLES[location.pathname] || '任务调度中心';
 
   return (
-    <>
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
-        <div className="h-16 flex items-center px-6 font-bold text-xl border-b border-gray-200 gap-2">
-          <Zap className="text-blue-600" size={24} />
-          商品分发中枢
-        </div>
-        <nav className="flex-1 p-4 space-y-2">
-          {navs.map((nav) => {
-            const isActive = location.pathname === nav.path;
-            const Icon = nav.icon;
-            return (
-              <Link key={nav.path} to={nav.path} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
-                isActive 
-                  ? 'bg-gray-100 font-semibold text-slate-900' 
-                  : 'font-medium text-gray-500 hover:bg-gray-50'
-              }`}>
-                <Icon size={20} /> {nav.name}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
-      <main className="flex-1 flex flex-col h-screen overflow-hidden relative bg-gray-50">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0">
-          <h2 className="text-lg font-semibold">{headerTitle}</h2>
-          <div className="flex items-center gap-4">
-             <div className="text-sm text-gray-500 flex items-center">
-                系统调度正常运行中 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse ml-2"></span>
-             </div>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_12%_8%,rgba(65,88,208,0.16),transparent_26%),radial-gradient(circle_at_88%_4%,rgba(200,80,192,0.14),transparent_28%),linear-gradient(135deg,#f0f2ff,#eef3ff_42%,#f6f4ff)] text-neutral-900">
+      <header className="sticky top-0 z-30 border-b border-[rgba(199,210,254,0.5)] bg-white/85 backdrop-blur-sm">
+        <div className="mx-auto flex h-[62px] max-w-7xl items-center justify-between px-5">
+          <div className="flex min-w-[260px] items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#4158d0] to-[#c850c0] text-sm font-bold text-white">
+              叮
+            </div>
+            <div className="text-[17px] font-bold dd-gradient-text">巨浪童装AI</div>
+            <span className="ml-1 rounded bg-[rgba(200,80,192,0.1)] px-1.5 py-0.5 text-[11px] font-semibold text-[#c850c0]">BETA</span>
           </div>
-        </header>
-        
-        <div className="flex-1 overflow-y-auto p-6">
+
+          <nav className="flex items-center gap-2 rounded-full border border-[rgba(199,210,254,0.72)] bg-white/80 px-2 py-2 shadow-[0_8px_22px_rgba(65,88,208,0.08)] backdrop-blur">
+            {appNavs.map((item) => {
+              const Icon = item.icon;
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className={`dd-nav-button gap-2 transition ${
+                    item.active
+                      ? 'bg-gradient-to-r from-[#4158d0] to-[#c850c0] text-white shadow-[0_6px_18px_rgba(117,106,255,0.28)]'
+                      : 'text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.name}
+                </a>
+              );
+            })}
+          </nav>
+
+          <div className="flex min-w-[260px] items-center justify-end text-sm text-neutral-500">
+            系统调度正常运行中 <span className="ml-2 inline-block h-2 w-2 animate-pulse rounded-full bg-green-500" />
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-7xl px-5 py-6">
+        <section className="dd-panel relative mb-5 overflow-hidden px-6 py-5">
+          <div className="absolute right-[-40px] top-[-70px] h-36 w-36 rounded-full bg-[rgba(200,80,192,0.12)] blur-3xl" />
+          <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex shrink-0 items-center gap-4 pr-6 xl:border-r xl:border-[rgba(199,210,254,0.62)]">
+              <div className="h-12 w-1.5 rounded-full bg-gradient-to-b from-[#4158d0] to-[#c850c0]" />
+              <div>
+                <div className="whitespace-nowrap text-2xl font-black leading-none tracking-tight text-neutral-900">{headerTitle}</div>
+                <div className="mt-2 whitespace-nowrap text-sm font-medium leading-none text-neutral-500">商品分发内部功能导航</div>
+              </div>
+            </div>
+            <nav className="flex flex-wrap items-center gap-2 xl:justify-end">
+              {navs.map((nav) => {
+                const isActive = location.pathname === nav.path;
+                const Icon = nav.icon;
+                return (
+                  <Link
+                    key={nav.path}
+                    to={nav.path}
+                    className={`dd-nav-button gap-2 transition ${
+                      isActive
+                        ? 'bg-gradient-to-r from-[#4158d0] to-[#c850c0] text-white shadow-[0_6px_18px_rgba(117,106,255,0.24)]'
+                        : 'border border-[rgba(199,210,254,0.72)] bg-white/75 text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {nav.name}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </section>
+
+        <div className="pb-8">
           <Routes>
             <Route path="/" element={<Tasks />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -66,7 +110,7 @@ function Layout() {
           </Routes>
         </div>
       </main>
-    </>
+    </div>
   );
 }
 
