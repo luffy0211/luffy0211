@@ -24,8 +24,24 @@ import logging
 logger = logging.getLogger("crawler_service")
 
 
-async def crawl_single_url(url: str, source: str = "tmall") -> dict:
-    """采集单个 URL，根据 source 分发到不同采集逻辑"""
+def detect_source(url: str) -> str:
+    """根据 URL 自动识别采集平台"""
+    url_lower = url.lower()
+    if "3e3e" in url_lower:
+        return "3e3e"
+    elif "tmall.com" in url_lower:
+        return "tmall"
+    elif "taobao.com" in url_lower:
+        return "taobao"
+    elif "1688.com" in url_lower:
+        return "1688"
+    return "tmall"
+
+
+async def crawl_single_url(url: str, source: str = "") -> dict:
+    """采集单个 URL，根据 source 分发到不同采集逻辑；source 为空时自动识别"""
+    if not source:
+        source = detect_source(url)
     if source == "3e3e":
         return await crawl_3e3e_url(url)
     else:
@@ -126,10 +142,13 @@ async def crawl_tmall_url(url: str, source: str = "tmall") -> dict:
 
 async def crawl_3e3e_url(url: str) -> dict:
     """采集 3e3e 平台商品"""
-    async with async_playwright() as p:
-        browser = await launch_browser(p, channel=BROWSER_CHANNEL, args=BROWSER_ARGS, headless=True)
+    state_file = E3E3_STATE_FILE if os.path.exists(E3E3_STATE_FILE) else None
+    if not state_file:
+        raise RuntimeError("3e3e 未登录，请先在平台管理中完成 3e3e 登录")
 
-        state_file = E3E3_STATE_FILE if os.path.exists(E3E3_STATE_FILE) else None
+    async with async_playwright() as p:
+        browser = await launch_browser(p, channel=BROWSER_CHANNEL, args=BROWSER_ARGS, headless=False)
+
         context = await create_context(browser, state_file=state_file, stealth=True)
         page = await context.new_page()
 

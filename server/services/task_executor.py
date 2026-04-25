@@ -15,10 +15,11 @@ logger = logging.getLogger("task_executor")
 def execute_task_background(task_id: int):
     """在新线程中启动一个事件循环来执行任务（避免阻塞主 uvicorn 循环）"""
     def _target():
+        # Windows 必须显式设置 ProactorEventLoop 策略，
+        # 否则 Playwright 无法 create_subprocess_exec
         if sys.platform.startswith("win"):
-            loop = asyncio.ProactorEventLoop()
-        else:
-            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
             loop.run_until_complete(run_task(task_id))
@@ -65,11 +66,11 @@ async def run_task(task_id: int):
 
 async def _run_crawl(db, task):
     """执行采集任务：逐个 URL 调用现有 crawler"""
-    from server.services.crawler_service import crawl_single_url
+    from server.services.crawler_service import crawl_single_url, detect_source
     from server.models import Product
 
     config = json.loads(task.config_json) if task.config_json else {}
-    source = config.get("source", "tmall")
+    global_source = config.get("source", "")
 
     for item in task.items:
         if task.status == "cancelled":
@@ -78,6 +79,8 @@ async def _run_crawl(db, task):
             item.status = "running"
             await db.commit()
 
+            # 优先用全局指定的 source，否则按 URL 自动识别
+            source = global_source or detect_source(item.url)
             product_data = await crawl_single_url(item.url, source)
 
             product = Product(

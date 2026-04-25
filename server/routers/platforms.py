@@ -18,7 +18,7 @@ router = APIRouter()
 STATE_FILE_MAP = {
     "taobao": "taobao_state.json",
     "weixin": "weixin_state.json",
-    "shipinhao": "shipinhao_state.json",
+    "shipinhao": "weixin_state.json",
     "xhs": "xiaohongshu_state.json",
     "doudian": "doudian_state.json",
     "qianniu": "qianniu_state.json",
@@ -77,7 +77,7 @@ async def trigger_login(code: str, db: AsyncSession = Depends(get_db)):
     login_map = {
         "taobao": "login.taobao_login",
         "weixin": "login.weixin_login",
-        "shipinhao": "login.shipinhao_login",
+        "shipinhao": "login.weixin_login",
         "doudian": "login.doudian_login",
         "qianniu": "login.qianniu_login",
         "3e3e": "login.e3e3_login",

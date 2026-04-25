@@ -47,7 +47,7 @@ class TaskListOut(BaseModel):
 
 class CrawlTaskCreate(BaseModel):
     urls: list[str]
-    source: str = "tmall"
+    source: str = ""  # 为空时根据 URL 自动识别平台
     schedule_type: str = "immediate"
     cron_expr: str = ""
     scheduled_at: Optional[datetime] = None

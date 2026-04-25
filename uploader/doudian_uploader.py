@@ -62,8 +62,26 @@ async def upload_main_images(page: Page, image_files: list[str]):
 
             file_chooser = await fc_info.value
             await file_chooser.set_files(image_files)
-            logger.info("图片已选择")
-            await page.wait_for_timeout(3000)
+            logger.info("图片已选择，等待上传完成...")
+
+            # 轮询等待图片上传完成（进度条消失 / 缩略图全部出现）
+            uploaded = False
+            for wait_i in range(30):
+                await page.wait_for_timeout(1000)
+                try:
+                    # 检查是否还有上传中的进度条/loading
+                    progress = page.locator('xpath=//div[contains(@class,"material-upload-button")]//div[contains(@class,"progress") or contains(@class,"loading") or contains(@class,"uploading")]')
+                    if await progress.count() == 0:
+                        uploaded = True
+                        logger.info(f"图片上传完成 (等待 {wait_i + 1}s)")
+                        break
+                except Exception:
+                    pass
+
+            if not uploaded:
+                logger.info("上传进度检测超时，使用固定等待 8s")
+                await page.wait_for_timeout(8000)
+
         except Exception as e:
             logger.error(f"点击上传区域失败: {e}")
             return False
@@ -75,21 +93,29 @@ async def upload_main_images(page: Page, image_files: list[str]):
 
 
 async def generate_title_ai(page: Page):
-    """智能生成标题"""
+    """智能生成标题：等待'立即使用'按钮出现并点击"""
     if await is_page_closed(page):
         return False
-
     try:
-        
-
         use_btn = page.locator('xpath=//a[normalize-space()="立即使用"]').first
-        if await use_btn.is_visible(timeout=5000):
-            await use_btn.click()
-            logger.info("标题已应用")
-            return True
-        return False
+        await use_btn.wait_for(state="visible", timeout=15000)
+        await use_btn.click()
+        logger.info("已点击'立即使用'，标题已应用")
+        return True
     except Exception as e:
-        logger.warning(f"智能生成标题失败: {e}")
+        logger.warning(f"智能生成标题失败（'立即使用'未出现或点击失败）: {e}")
+        try:
+            ai_ioc = page.locator('xpath=//div[@id="goods-title-wrapper"]//span[@class="ecom-g-input-suffix"]/span/img').first
+            await ai_ioc.click()
+            await page.wait_for_timeout(2000)
+            first_recommend = page.locator('xpath=//li[1]//span[contains(@style,"rgb(86, 89, 96)")]').first
+            await first_recommend.click()
+            logger.info("已点击推荐标题")   
+            return True
+        except:
+            pass
+        await page.wait_for_timeout(5000)
+        logger.warning("标题输入框不可见，可能未生成标题")
         return False
 
 
@@ -552,9 +578,9 @@ async def fill_material_composition(page: Page, material_str: str):
     processed = []
     polyester_extra = 0
     for m in materials:
-        if m["name"] == "其他" and m["percent"] > 15:
+        if "其他" in m["name"] and m["percent"] > 15:
             polyester_extra += m["percent"] - 15
-            processed.append({"name": "其他", "percent": 15})
+            processed.append({"name": m["name"], "percent": 15})
         else:
             processed.append(m)
 
@@ -736,18 +762,17 @@ async def process_single_item(page: Page, item: dict, index: int):
     title_generated = await generate_title_ai(page)
 
     # 3. 等待"更多推荐"元素出现（判断页面是否正常加载）
-    more_recommend_ready = False
     try:
         more_btn = page.locator('xpath=//button[contains(@class,"ecom-g-btn-link") and .//span[text()="更多推荐"]]')
         await more_btn.wait_for(state="visible", timeout=15000)
-        more_recommend_ready = True
         logger.info("已检测到'更多推荐'元素，页面加载正常")
     except:
-        logger.warning("未检测到'更多推荐'元素")
-
-    if not more_recommend_ready:
-        # 返回 None 表示需要重启浏览器重试
-        return None
+        logger.warning("未检测到'更多推荐'元素，继续执行")
+        # 检查是否跳到了登录页（真正异常才重试）
+        current_url = page.url
+        if "login" in current_url or "passport" in current_url:
+            logger.error("页面跳转到登录页，需要重新登录")
+            return None
 
     # 4. 点击下一步
     await click_confirm_next(page)
@@ -805,7 +830,7 @@ async def process_single_item(page: Page, item: dict, index: int):
 
     # 15. 提交商品
     try:
-        submit_btn = page.locator('xpath=//div[@class="action-bar"]//button[normalize-space()="提交商品"]')
+        submit_btn = page.locator('xpath=//button[span[text()="发布商品"]]').first
         await submit_btn.click()
         logger.info("已点击提交商品")
         await page.wait_for_timeout(3000)
@@ -939,7 +964,7 @@ async def run_uploader():
             )
 
         logger.info(f"结果已保存到: {result_file}")
-        await page.wait_for_timeout(500000000)
+        await page.wait_for_timeout(5000)
         await browser.close()
         logger.info("浏览器已关闭")
 

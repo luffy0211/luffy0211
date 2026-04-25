@@ -9,7 +9,7 @@ STATE_DIR = os.path.join(PROJECT_DIR, "state")
 # 状态文件
 TAOBAO_STATE_FILE = os.path.join(STATE_DIR, "taobao_state.json")
 WEIXIN_STATE_FILE = os.path.join(STATE_DIR, "weixin_state.json")
-SHIPINHAO_STATE_FILE = os.path.join(STATE_DIR, "shipinhao_state.json")
+SHIPINHAO_STATE_FILE = os.path.join(STATE_DIR, "weixin_state.json")  # 与微信共用同一登录状态
 XHS_STATE_FILE = os.path.join(STATE_DIR, "xiaohongshu_state.json")
 E3E3_STATE_FILE = os.path.join(STATE_DIR, "3e3e_state.json")
 

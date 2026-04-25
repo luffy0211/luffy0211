@@ -57,7 +57,7 @@ def main():
             from login.weixin_login import login_and_save_state
             asyncio.run(login_and_save_state())
         elif args.platform == "shipinhao":
-            from login.shipinhao_login import login_and_save_state
+            from login.weixin_login import login_and_save_state
             asyncio.run(login_and_save_state())
         elif args.platform == "doudian":
             from login.doudian_login import login_and_save_state
@@ -75,7 +75,7 @@ def main():
         asyncio.run(run_uploader())
 
     elif args.command == "upload-channels":
-        from uploader.shipinhao_uploader import run_uploader
+        from uploader.weixin_uploader import run_uploader
         asyncio.run(run_uploader())
 
     elif args.command == "upload-doudian":

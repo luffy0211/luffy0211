@@ -476,12 +476,12 @@ async def test_weixin_login():
                             else:
                                 print(f"填写颜色失败: {fill_result.get('reason')}")
                                 print("请手动填写颜色...")
-                                input("填写完成后按回车继续...")
+                                
                                 
                         except Exception as e:
                             print(f"填写颜色失败: {e}")
                             print("请手动填写颜色...")
-                            input("填写完成后按回车继续...")
+                            
 
                     # 7. 填写风格
                     if style:
@@ -535,12 +535,12 @@ async def test_weixin_login():
                             else:
                                 print(f"选择风格失败: {select_result.get('reason')}")
                                 print("请手动选择风格...")
-                                input("选择完成后按回车继续...")
+                                
                                 
                         except Exception as e:
                             print(f"选择风格失败: {e}")
                             print("请手动选择风格...")
-                            input("选择完成后按回车继续...")
+                            
 
                 # 处理完留一点缓冲时间
                 await page.wait_for_timeout(3000)
@@ -549,7 +549,6 @@ async def test_weixin_login():
 
         print("\n所有任务处理完毕！")
         # 等待用户确认
-        input("按回车关闭浏览器...")
         await browser.close()
 
 if __name__ == "__main__":

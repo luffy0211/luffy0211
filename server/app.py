@@ -1,5 +1,11 @@
 import sys
 import os
+import asyncio
+
+# Windows 必须使用 ProactorEventLoop 才能创建子进程（Playwright 依赖）
+# uvicorn reload=True 会 fork 子进程，子进程不会继承 start.py 的 policy 设置
+if sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
