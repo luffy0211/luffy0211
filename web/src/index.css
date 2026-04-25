@@ -2,18 +2,239 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f9fafb; /* 对应 tailwind 的 bg-gray-50 */
-  color: #0f172a; /* 对应 text-slate-900 */
+:root {
+  --dd-primary: #4158d0;
+  --dd-secondary: #c850c0;
+  --dd-accent: #756aff;
+  --dd-gradient: linear-gradient(135deg,#4158d0,#c850c0);
 }
 
-/* 关键：让 React 根节点行为和原来 HTML 的 body 一模一样 */
+body {
+  font-family: PingFangSC, "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(65,88,208,.16), transparent 26%),
+    radial-gradient(circle at 88% 4%, rgba(200,80,192,.14), transparent 28%),
+    linear-gradient(135deg,#f0f2ff,#eef3ff 42%,#f6f4ff);
+  color: #0f172a;
+}
+
 #root {
-  display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
+}
+
+.dd-gradient-text {
+  background: var(--dd-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dd-panel {
+  background: linear-gradient(135deg,rgba(255,255,255,.88),rgba(250,248,255,.78));
+  border: 1px solid rgba(199,210,254,.68);
+  border-radius: 24px;
+  box-shadow: 0 18px 44px rgba(65,88,208,.1);
+  backdrop-filter: blur(12px);
+}
+
+.dd-card {
+  background: linear-gradient(135deg,rgba(255,255,255,.94),rgba(250,248,255,.84));
+  border: 1px solid rgba(199,210,254,.66);
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(65,88,208,.08);
+}
+
+.dd-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  min-width: 112px !important;
+  padding: 0 20px !important;
+  background: var(--dd-gradient);
+  color: #fff;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  font-weight: 800;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 6px 18px rgba(117,106,255,.28);
+}
+
+.dd-button:hover {
+  filter: brightness(1.08);
+}
+
+.dd-button-soft {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  min-width: 112px !important;
+  padding: 0 20px !important;
+  background: rgba(255,255,255,.9);
+  color: #475569;
+  border: 1px solid rgba(199,210,254,.7);
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  font-weight: 800;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 14px rgba(65,88,208,.05);
+}
+
+.dd-button-soft:hover {
+  background: rgba(65,88,208,.06);
+  color: #4158d0;
+}
+
+.dd-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+}
+
+.dd-nav-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.dd-close-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.72);
+  color: rgba(117,106,255,.78);
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+.dd-close-button:hover {
+  color: #4158d0;
+  background: rgba(65,88,208,.08);
+}
+
+.dd-input,
+.dd-select {
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(199,210,254,.72);
+  background: rgba(255,255,255,.9);
+  color: #334155;
+  outline: none;
+  box-shadow: 0 4px 14px rgba(65,88,208,.04);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.dd-input:focus,
+.dd-select:focus {
+  border-color: rgba(117,106,255,.72);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(117,106,255,.12);
+}
+
+.dd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.dd-badge-success { background: rgba(16,185,129,.1); color: #047857; border-color: rgba(16,185,129,.18); }
+.dd-badge-danger { background: rgba(239,68,68,.1); color: #b91c1c; border-color: rgba(239,68,68,.18); }
+.dd-badge-info { background: rgba(65,88,208,.1); color: #4158d0; border-color: rgba(65,88,208,.18); }
+.dd-badge-warning { background: rgba(245,158,11,.12); color: #b45309; border-color: rgba(245,158,11,.2); }
+.dd-badge-muted { background: rgba(100,116,139,.1); color: #64748b; border-color: rgba(100,116,139,.16); }
+.dd-badge-gradient { background: linear-gradient(135deg,rgba(65,88,208,.12),rgba(200,80,192,.12)); color: #4158d0; border-color: rgba(199,210,254,.7); }
+
+.dd-table {
   overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(199,210,254,.68);
+  background: linear-gradient(135deg,rgba(255,255,255,.92),rgba(250,248,255,.78));
+  box-shadow: 0 16px 38px rgba(65,88,208,.09);
+}
+
+.dd-table table { width: 100%; border-collapse: collapse; }
+.dd-table thead { background: linear-gradient(90deg,rgba(65,88,208,.08),rgba(200,80,192,.07)); color: #475569; }
+.dd-table th { padding: 13px 16px; font-size: 12px; font-weight: 800; text-align: left; }
+.dd-table td { padding: 14px 16px; border-top: 1px solid rgba(226,232,240,.85); color: #334155; }
+.dd-table tbody tr { transition: background .18s ease; }
+.dd-table tbody tr:hover { background: rgba(65,88,208,.035); }
+
+.dd-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(199,210,254,.68);
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 8px 22px rgba(65,88,208,.06);
+}
+
+.dd-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.dd-tab-active {
+  background: var(--dd-gradient);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(117,106,255,.26);
+}
+
+.dd-empty {
+  border-radius: 20px;
+  border: 1px dashed rgba(199,210,254,.9);
+  background: linear-gradient(135deg,rgba(255,255,255,.74),rgba(246,244,255,.86));
+  color: #64748b;
+}
+
+.dd-modal {
+  border-radius: 24px;
+  border: 1px solid rgba(199,210,254,.68);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 24px 70px rgba(65,88,208,.16);
+}
+
+.dd-overlay {
+  background: rgba(15,23,42,.36);
+  backdrop-filter: blur(6px);
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
