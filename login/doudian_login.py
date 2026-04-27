@@ -4,6 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import config
 from playwright.async_api import async_playwright
 
 import logging
@@ -25,7 +26,7 @@ async def login_and_save_state():
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=False,
-            channel="msedge",
+            channel=config.BROWSER_CHANNEL,
             args=["--start-maximized"]
         )
         

@@ -6,9 +6,9 @@ import Tasks from './pages/Tasks';
 import Platforms from './pages/Platforms';
 
 const appNavs = [
-  { href: 'http://127.0.0.1:3100', name: '工作台', icon: LayoutGrid, active: false },
-  { href: 'http://127.0.0.1:3200', name: '图片优化', icon: ImageIcon, active: false },
-  { href: 'http://127.0.0.1:5173', name: '商品分发', icon: Blocks, active: true },
+  { href: '/', name: '工作台', icon: LayoutGrid, active: false },
+  { href: '/ecom', name: '图片优化', icon: ImageIcon, active: false },
+  { href: '/luffy', name: '商品分发', icon: Blocks, active: true },
 ];
 
 const navs = [
@@ -49,9 +49,7 @@ function Layout() {
                   key={item.name}
                   href={item.href}
                   className={`dd-nav-button gap-2 transition ${
-                    item.active
-                      ? 'bg-gradient-to-r from-[#4158d0] to-[#c850c0] text-white shadow-[0_6px_18px_rgba(117,106,255,0.28)]'
-                      : 'text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
+                    item.active ? 'dd-nav-button-active' : 'text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -87,9 +85,7 @@ function Layout() {
                     key={nav.path}
                     to={nav.path}
                     className={`dd-nav-button gap-2 transition ${
-                      isActive
-                        ? 'bg-gradient-to-r from-[#4158d0] to-[#c850c0] text-white shadow-[0_6px_18px_rgba(117,106,255,0.24)]'
-                        : 'border border-[rgba(199,210,254,0.72)] bg-white/75 text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
+                      isActive ? 'dd-nav-button-active' : 'border border-[rgba(199,210,254,0.72)] bg-white/75 text-neutral-600 hover:bg-[rgba(65,88,208,0.06)]'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -115,5 +111,5 @@ function Layout() {
 }
 
 export default function App() {
-  return <BrowserRouter><Layout /></BrowserRouter>;
+  return <BrowserRouter basename="/luffy"><Layout /></BrowserRouter>;
 }

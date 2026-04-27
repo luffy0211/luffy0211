@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle2, XCircle, RefreshCw, QrCode, Loader2, MessageCircle, BookHeart, ShoppingBag, X } from 'lucide-react';
+import { CheckCircle2, XCircle, RefreshCw, QrCode, Loader2, MessageCircle, BookHeart, ShoppingBag, X, Download, WifiOff, Wifi } from 'lucide-react';
 import { getPlatforms, triggerLogin, type Platform } from '../api/client';
 
 const PLATFORM_ICONS: Record<string, typeof MessageCircle> = {
@@ -25,6 +25,7 @@ export default function Platforms() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
   const [qrModal, setQrModal] = useState<Platform | null>(null);
+  const [agentStatus, setAgentStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
   const load = async () => {
     try {
@@ -33,7 +34,16 @@ export default function Platforms() {
     } catch { /* */ }
   };
 
-  useEffect(() => { load(); }, []);
+  const checkAgent = () => {
+    fetch('http://localhost:8000/api/health', { signal: AbortSignal.timeout(3000) })
+      .then(r => setAgentStatus(r.ok ? 'online' : 'offline'))
+      .catch(() => setAgentStatus('offline'));
+  };
+
+  useEffect(() => {
+    load();
+    checkAgent();
+  }, []);
 
   const handleLogin = async (p: Platform) => {
     setQrModal(p);
@@ -47,6 +57,49 @@ export default function Platforms() {
 
   return (
     <div className="space-y-6">
+
+      {/* 本地代理状态横幅 */}
+      {agentStatus === 'offline' && (
+        <div className="rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100">
+                <WifiOff size={20} className="text-amber-600" />
+              </div>
+              <div>
+                <div className="font-bold text-amber-800">本地代理未运行</div>
+                <div className="text-sm text-amber-600 mt-0.5">
+                  首次使用请下载并安装本地代理，安装后开机自动运行，无需手动操作
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <a
+                href="/luffy/downloads/luffy-agent.zip"
+                download
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(245,158,11,0.35)] hover:opacity-90 transition"
+              >
+                <Download size={16} /> 下载本地代理
+              </a>
+              <button
+                onClick={checkAgent}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition"
+              >
+                <RefreshCw size={14} /> 重新检测
+              </button>
+            </div>
+          </div>
+          <div className="mt-3 ml-13 text-xs text-amber-500">
+            安装步骤：解压 ZIP → 双击 install_windows.bat → 刷新此页面
+          </div>
+        </div>
+      )}
+      {agentStatus === 'online' && (
+        <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5 text-sm text-green-700 w-fit">
+          <Wifi size={15} className="text-green-500" /> 本地代理运行中
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {platforms.map((p) => {
           const Icon = PLATFORM_ICONS[p.code] || ShoppingBag;

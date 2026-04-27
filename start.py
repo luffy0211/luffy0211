@@ -19,11 +19,11 @@ if __name__ == "__main__":
     print("  后端: http://localhost:8000")
     print("  API 文档: http://localhost:8000/docs")
     print("=" * 50)
+    port = int(os.getenv("LUFFY_PORT", "8000"))
     uvicorn.run(
         "server.app:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
-        loop="asyncio",   # ⭐⭐⭐ 再加这一行，双保险 ⭐⭐⭐
+        port=port,
+        reload=False,
+        loop="asyncio",
     )
-    # uvicorn.run("server.app:app", host="0.0.0.0", port=8000, reload=True)

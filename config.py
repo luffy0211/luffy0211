@@ -23,7 +23,7 @@ OUTPUT_EXCEL = os.path.join(DESKTOP_PATH, "taobao_products.xlsx")
 IMAGE_ROOT = os.path.join(DESKTOP_PATH, "童装")
 
 # ==================== 浏览器配置 ====================
-BROWSER_CHANNEL = "msedge"
+BROWSER_CHANNEL = os.getenv("LUFFY_BROWSER_CHANNEL", "msedge")
 BROWSER_ARGS = [
     "--start-maximized",
     "--disable-blink-features=AutomationControlled",
