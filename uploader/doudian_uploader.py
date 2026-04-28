@@ -964,7 +964,7 @@ async def run_uploader():
             )
 
         logger.info(f"结果已保存到: {result_file}")
-        await page.wait_for_timeout(5000)
+        await page.wait_for_timeout(500000000)
         await browser.close()
         logger.info("浏览器已关闭")
 

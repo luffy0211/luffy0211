@@ -102,6 +102,27 @@ XHS_UPLOAD_COLUMNS = {
     "sizes": 19,             # S列：尺码（空格分隔，只取数字）
 }
 
+# ==================== 千牛上架配置 ====================
+QIANNIU_STATE_FILE = os.path.join(STATE_DIR, "qianniu_state.json")
+QIANNIU_GOODS_URL = "https://item.upload.taobao.com/sell/ai/category.htm"
+QIANNIU_UPLOAD_EXCEL = os.path.join(DESKTOP_PATH, "影刀上架参数.xlsx")
+
+# 千牛 Excel 列映射（与抖店相同）
+QIANNIU_UPLOAD_COLUMNS = {
+    "price": 3,              # C列：价格（用于计算市场价 = 价格*3）
+    "style": 6,              # F列：风格
+    "color": 7,              # G列：颜色分类（空格分隔）
+    "season": 8,             # H列：适应季节
+    "material_composition": 9, # I列：材质成分（空格分隔，可多个）
+    "fabric": 10,            # J列：面料
+    "safety_level": 11,      # K列：安全等级
+    "image_path": 14,        # N列：主图路径
+    "title": 15,             # O列：商品标题
+    "sale_price": 16,        # P列：售价
+    "color_image_paths": 18, # R列：颜色图片路径（空格分隔）
+    "sizes": 19,             # S列：尺码（空格分隔，只取数字）
+}
+
 # ==================== 抖店上架配置 ====================
 DOUDIAN_STATE_FILE = os.path.join(STATE_DIR, "doudian_state.json")
 DOUDIAN_GOODS_URL = "https://fxg.jinritemai.com/ffa/g/create"

@@ -17,8 +17,8 @@ def main():
     login_parser = subparsers.add_parser("login", help="登录并保存状态")
     login_parser.add_argument(
         "platform",
-        choices=["taobao", "weixin", "shipinhao", "doudian", "3e3e"],
-        help="登录平台: taobao / weixin / shipinhao / doudian / 3e3e",
+        choices=["taobao", "weixin", "shipinhao", "doudian", "3e3e", "qianniu"],
+        help="登录平台: taobao / weixin / shipinhao / doudian / 3e3e / qianniu",
     )
 
     # crawl
@@ -33,6 +33,9 @@ def main():
     # upload-doudian
     subparsers.add_parser("upload-doudian", help="批量上架到抖店（从桌面 影刀上架参数.xlsx 读取）")
 
+    # upload-qianniu
+    subparsers.add_parser("upload-qianniu", help="批量上架到千牛（从桌面 影刀上架参数.xlsx 读取）")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -42,11 +45,13 @@ def main():
         print("  python main.py login weixin        # 微信登录")
         print("  python main.py login shipinhao     # 视频号登录")
         print("  python main.py login doudian       # 抖店登录")
+        print("  python main.py login qianniu       # 千牛登录")
         print("  python main.py login 3e3e          # 3e3e登录")
         print("  python main.py crawl               # 批量采集")
         print("  python main.py upload              # 批量上架到微信小商店")
         print("  python main.py upload-channels     # 批量上架到视频号小店")
         print("  python main.py upload-doudian      # 批量上架到抖店")
+        print("  python main.py upload-qianniu      # 批量上架到千牛")
         return
 
     if args.command == "login":
@@ -61,6 +66,9 @@ def main():
             asyncio.run(login_and_save_state())
         elif args.platform == "doudian":
             from login.doudian_login import login_and_save_state
+            asyncio.run(login_and_save_state())
+        elif args.platform == "qianniu":
+            from login.qianniu_login import login_and_save_state
             asyncio.run(login_and_save_state())
         elif args.platform == "3e3e":
             from login.e3e3_login import login_and_save_state
@@ -80,6 +88,10 @@ def main():
 
     elif args.command == "upload-doudian":
         from uploader.doudian_uploader import run_uploader
+        asyncio.run(run_uploader())
+
+    elif args.command == "upload-qianniu":
+        from uploader.qianniu_uploader import run_uploader
         asyncio.run(run_uploader())
 
 
